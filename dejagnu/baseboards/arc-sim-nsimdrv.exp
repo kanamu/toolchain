@@ -55,7 +55,7 @@ lappend nsim_flags \
 
 set nsim_bin "$::env(NSIM_HOME)/bin/nsimdrv"
 
-set_board_info sim_time_limit 300
+set_board_info sim_time_limit 150
 
 # Detect if nSIM Turbo is available and libstdc++ is being tested.  Most of the
 # Dejagnu tests do not benefit from Turbo mode, because they are extremely
@@ -76,6 +76,12 @@ if { $tool == "libstdc++" } {
 	    set_board_info sim_time_limit 1200
 	}
     }
+} elseif { $tool == "gcc" } {
+    # Some gcc dejagnu tests reach timeout which is 300 sec by defualt.
+    # `set_board_info sim_time_limit <timeout>` does not affect timeout of gcc
+    # tests. Following approach for setting gcc tests timeout was found here:
+    # https://gcc.gnu.org/onlinedocs/gcc-7.1.0/gccint/Directives.html
+    set_board_info gcc,timeout 600
 }
 
 # Check if nsim_download_elf_sections option is required - whether nSIM version
